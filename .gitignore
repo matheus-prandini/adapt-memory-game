@@ -2,6 +2,14 @@
 *.unityproj
 *.sln
 
+# macOS
+.DS_Store
+
+# Pastas geradas pelo Unity
+Library/
+Temp/
+UserSettings/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
