@@ -17,6 +17,7 @@ public class CardsController : MonoBehaviour
 
     int matchesCount = 0;
 
+    public event System.Action OnAllMatchesFound;
 
     void Start()
     {
@@ -84,6 +85,7 @@ public class CardsController : MonoBehaviour
                 PrimeTween.Sequence.Create()
                     .Chain(PrimeTween.Tween.Scale(gridTransform, Vector3.one * 1.2f, 0.5f, ease: PrimeTween.Ease.OutBack))
                     .Chain(PrimeTween.Tween.Scale(gridTransform, Vector3.one, 0.1f));
+                OnAllMatchesFound?.Invoke();
             }
         }
         else
