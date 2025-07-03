@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
 
 public class CardsController : MonoBehaviour
 {
@@ -9,6 +11,7 @@ public class CardsController : MonoBehaviour
     [SerializeField] Sprite[] sprites;
 
     private List<Sprite> spritePairs;
+    private List<int> spriteIds;
 
     Card firstSelected;
     Card secondSelected;
@@ -18,6 +21,7 @@ public class CardsController : MonoBehaviour
     int matchesCount = 0;
 
     public event System.Action OnAllMatchesFound;
+    public event System.Action OnCardFlipped;
 
     void Start()
     {
@@ -27,14 +31,19 @@ public class CardsController : MonoBehaviour
 
     private void PrepareSprites()
     {
-        spritePairs = new List<Sprite>();
-        foreach (var sprite in sprites)
+        var combined = new List<(Sprite sprite, int id)>();
+        for (int id = 0; id < sprites.Length; id++)
         {
-            spritePairs.Add(sprite);
-            spritePairs.Add(sprite);
+            combined.Add((sprites[id], id));
+            combined.Add((sprites[id], id));
         }
 
-        ShuffleSprites(spritePairs);
+        combined = combined
+            .OrderBy(_ => Random.value)
+            .ToList();
+
+        spritePairs = combined.Select(x => x.sprite).ToList();
+        spriteIds   = combined.Select(x => x.id).ToList();
     }
 
     void CreateCards()
@@ -44,6 +53,9 @@ public class CardsController : MonoBehaviour
             Card card = Instantiate(cardPrefab, gridTransform);
             card.SetIconSprite(spritePairs[i]);
             card.controller = this;
+
+            var audio = card.GetComponent<CardAudio>();
+            audio.cardID = spriteIds[i];
         }
     }
 
@@ -67,6 +79,7 @@ public class CardsController : MonoBehaviour
         {
             secondSelected = card;
             canSelect = false;
+            OnCardFlipped?.Invoke();
             StartCoroutine(CheckMatch());
         }
     }
