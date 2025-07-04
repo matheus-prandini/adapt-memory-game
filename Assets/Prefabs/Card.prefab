@@ -187,6 +187,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flipClips:
   - {fileID: 8300000, guid: f7ff3a1958de84a8aa32d3d7d65fedb5, type: 3}
+  - {fileID: 8300000, guid: d81b422b2eef34daba6a529848208949, type: 3}
+  - {fileID: 8300000, guid: 68ef7a21f4e1b4e67890f910a25c6b66, type: 3}
+  - {fileID: 8300000, guid: 1291ace2865df4b4985b70cdd3429b0d, type: 3}
+  - {fileID: 8300000, guid: 3e6296a326afa4234b9b2fc2c0193ab4, type: 3}
+  - {fileID: 8300000, guid: bba6bfa917bfe4217b8ee87922831bcd, type: 3}
+  - {fileID: 8300000, guid: 0ce4d3ea2895b46ebab7ea9abd2a5326, type: 3}
+  - {fileID: 8300000, guid: cbc3bd7228e214598b1f4eb743c75916, type: 3}
+  - {fileID: 8300000, guid: e904c4a8c5c54449f951e59ca37aa5d1, type: 3}
   cardID: 0
 --- !u!114 &836371298320092776
 MonoBehaviour:

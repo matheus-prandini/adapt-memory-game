@@ -15,6 +15,7 @@ public class CardsController : MonoBehaviour
 
     Card firstSelected;
     Card secondSelected;
+    private List<Card> allCards;
 
     bool canSelect = true;
 
@@ -22,11 +23,14 @@ public class CardsController : MonoBehaviour
 
     public event System.Action OnAllMatchesFound;
     public event System.Action OnCardFlipped;
+    public event System.Action OnPreviewComplete;
 
     void Start()
     {
+        allCards = new List<Card>();
         PrepareSprites();
         CreateCards();
+        StartCoroutine(PreviewCoroutine());
     }
 
     private void PrepareSprites()
@@ -56,7 +60,27 @@ public class CardsController : MonoBehaviour
 
             var audio = card.GetComponent<CardAudio>();
             audio.cardID = spriteIds[i];
+            allCards.Add(card);
         }
+    }
+
+    private IEnumerator PreviewCoroutine()
+    {
+        canSelect = false;
+
+        foreach (var c in allCards)
+            c.ShowInstant();
+
+        yield return new WaitForSeconds(2f);
+
+        foreach (var c in allCards)
+            c.HideInstant();
+
+        OnPreviewComplete?.Invoke();
+        firstSelected  = null;
+        secondSelected = null;
+
+        canSelect = true;
     }
 
     public void SetSelected(Card card)

@@ -14,7 +14,7 @@ public class Card : MonoBehaviour
 
     [Header("Estado")]
     public bool isSelected = false;                   // Já está virada?
-    public bool isMatched  = false;                   // Já foi casada?
+    public bool isMatched = false;                   // Já foi casada?
 
     [HideInInspector] public CardsController controller;
     private CardAudio audioPlayer;
@@ -73,5 +73,17 @@ public class Card : MonoBehaviour
                isSelected = false;
            })
            .Append(transform.DOScaleX(1f, 0.2f));
+    }
+    
+    public void ShowInstant()
+    {
+        iconImage.sprite = iconSprite;
+        isSelected      = true;
+    }
+
+    public void HideInstant()
+    {
+        iconImage.sprite = hiddenIconSprite;
+        isSelected      = false;
     }
 }
