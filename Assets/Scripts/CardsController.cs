@@ -1,66 +1,80 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using DG.Tweening;
-
+using System.Linq;
 
 public class CardsController : MonoBehaviour
 {
-    [SerializeField] Card cardPrefab;
-    [SerializeField] Transform gridTransform;
-    [SerializeField] Sprite[] sprites;
+    [Header("Prefabs & Transforms")]
+    [SerializeField] private Card cardPrefab;
+    [SerializeField] private Transform gridTransform;
 
-    private List<Sprite> spritePairs;
-    private List<int> spriteIds;
+    [Header("Configuração de Fase")]
+    [Tooltip("Asset de configuração desta fase.")]
+    [SerializeField] private LevelConfig levelConfig;
 
-    Card firstSelected;
-    Card secondSelected;
+    // estados internos
     private List<Card> allCards;
+    private Sprite[]    spritePairs;
+    private int[]       spriteIds;
+    private Card firstSelected, secondSelected;
+    private bool canSelect = true;
+    private int matchesCount = 0;
 
-    bool canSelect = true;
-
-    int matchesCount = 0;
-
+    // eventos externos
     public event System.Action OnAllMatchesFound;
     public event System.Action OnCardFlipped;
     public event System.Action OnPreviewComplete;
 
+
     void Start()
     {
+        if (levelConfig == null || levelConfig.spriteCategory == null)
+        {
+            Debug.LogError("LevelConfig ou SpriteCategory não atribuído!", this);
+            enabled = false; return;
+        }
+
         allCards = new List<Card>();
-        PrepareSprites();
-        CreateCards();
+        PrepareAndShuffle();
+        SpawnCards();
         StartCoroutine(PreviewCoroutine());
     }
 
-    private void PrepareSprites()
+    void PrepareAndShuffle()
     {
-        var combined = new List<(Sprite sprite, int id)>();
-        for (int id = 0; id < sprites.Length; id++)
+        var pool = levelConfig.spriteCategory.sprites;
+        int maxPairs = Mathf.Clamp(levelConfig.pairsCount, 1, pool.Length);
+
+        var list = new List<(Sprite, int)>();
+        for (int i = 0; i < maxPairs; i++)
         {
-            combined.Add((sprites[id], id));
-            combined.Add((sprites[id], id));
+            list.Add((pool[i], i));
+            list.Add((pool[i], i));
         }
 
-        combined = combined
-            .OrderBy(_ => Random.value)
-            .ToList();
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int r = Random.Range(0, i + 1);
+            var tmp = list[i]; list[i] = list[r]; list[r] = tmp;
+        }
 
-        spritePairs = combined.Select(x => x.sprite).ToList();
-        spriteIds = combined.Select(x => x.id).ToList();
+        spritePairs = list.Select(x => x.Item1).ToArray();
+        spriteIds   = list.Select(x => x.Item2).ToArray();
     }
 
-    void CreateCards()
+    void SpawnCards()
     {
-        for (int i = 0; i < spritePairs.Count; i++)
+        for (int i = 0; i < spritePairs.Length; i++)
         {
-            Card card = Instantiate(cardPrefab, gridTransform);
+            var card = Instantiate(cardPrefab, gridTransform);
             card.SetIconSprite(spritePairs[i]);
             card.controller = this;
 
             var audio = card.GetComponent<CardAudio>();
-            audio.cardID = spriteIds[i];
+            if (audio != null) audio.cardID = spriteIds[i];
+
             allCards.Add(card);
         }
     }
@@ -68,19 +82,12 @@ public class CardsController : MonoBehaviour
     private IEnumerator PreviewCoroutine()
     {
         canSelect = false;
-
-        foreach (var c in allCards)
-            c.ShowInstant();
-
-        yield return new WaitForSeconds(2f);
-
-        foreach (var c in allCards)
-            c.HideInstant();
+        foreach (var c in allCards) c.ShowInstant();
+        yield return new WaitForSeconds(levelConfig.previewDuration);
+        foreach (var c in allCards) c.HideInstant();
 
         OnPreviewComplete?.Invoke();
-        firstSelected = null;
-        secondSelected = null;
-
+        firstSelected = secondSelected = null;
         canSelect = true;
     }
 
@@ -98,9 +105,8 @@ public class CardsController : MonoBehaviour
         if (firstSelected == null)
         {
             firstSelected = card;
-            return;
         }
-        if (secondSelected == null)
+        else if (secondSelected == null)
         {
             secondSelected = card;
             canSelect = false;
@@ -109,75 +115,64 @@ public class CardsController : MonoBehaviour
         }
     }
 
-    IEnumerator CheckMatch()
+    private IEnumerator CheckMatch()
     {
         yield return new WaitForSeconds(0.3f);
 
         bool isMatch = firstSelected.iconSprite == secondSelected.iconSprite;
         if (isMatch)
         {
+            // acerto!
             matchesCount++;
-            firstSelected.isMatched = true;
+            firstSelected .isMatched = true;
             secondSelected.isMatched = true;
 
+            // flash de feedback
             var cardA = firstSelected;
             var cardB = secondSelected;
 
-            cardA.transform.DOKill(true);
-            cardB.transform.DOKill(true);
+            // mata tweens pendentes
+            DOTween.Kill(cardA.transform);
+            DOTween.Kill(cardB.transform);
 
+            // garante escala original
             cardA.transform.localScale = cardA.OriginalScale;
             cardB.transform.localScale = cardB.OriginalScale;
 
-            float punchMultiplier = 1.2f;
-            float punchDuration = 0.3f;
-            float returnDuration = 0.15f;
+            // pulse animation
+            float punchMul  = 1.2f;
+            float punchDur  = 0.3f;
+            float returnDur = 0.15f;
 
-            Sequence seq = DOTween.Sequence();
-            seq
-            .Join(cardA.transform.DOScale(cardA.OriginalScale * punchMultiplier, punchDuration).SetEase(Ease.OutBack))
-            .Join(cardB.transform.DOScale(cardB.OriginalScale * punchMultiplier, punchDuration).SetEase(Ease.OutBack))
-            .AppendInterval(0.05f)
-            .Join(cardA.transform.DOScale(cardA.OriginalScale, returnDuration))
-            .Join(cardB.transform.DOScale(cardB.OriginalScale, returnDuration))
-            .OnComplete(() =>
-            {
-                canSelect = true;
-                firstSelected = null;
-                secondSelected = null;
-            });
+            DOTween.Sequence()
+                .Join(cardA.transform.DOScale(cardA.OriginalScale * punchMul, punchDur).SetEase(Ease.OutBack))
+                .Join(cardB.transform.DOScale(cardB.OriginalScale * punchMul, punchDur).SetEase(Ease.OutBack))
+                .AppendInterval(0.05f)
+                .Join(cardA.transform.DOScale(cardA.OriginalScale, returnDur))
+                .Join(cardB.transform.DOScale(cardB.OriginalScale, returnDur))
+                .OnComplete(() =>
+                {
+                    canSelect = true;
+                    firstSelected = secondSelected = null;
+                });
 
-            if (matchesCount == spritePairs.Count / 2)
+            if (matchesCount == levelConfig.pairsCount)
                 OnAllMatchesFound?.Invoke();
         }
         else
         {
+            // erro: esperar e virar de novo
             yield return new WaitForSeconds(1f);
             firstSelected.Hide();
             secondSelected.Hide();
-
             canSelect = true;
-            firstSelected = null;
-            secondSelected = null;
+            firstSelected = secondSelected = null;
         }
     }
 
-
-    void ShuffleSprites(List<Sprite> spriteList)
-    {
-        for (int i = 0; i < spriteList.Count; i++)
-        {
-            Sprite temp = spriteList[i];
-            int randomIndex = Random.Range(i, spriteList.Count);
-            spriteList[i] = spriteList[randomIndex];
-            spriteList[randomIndex] = temp;
-        }
-    }
-    
     void OnDestroy()
     {
-        if (gridTransform != null)
-            DOTween.Kill(gridTransform);
+        // mata quaisquer tweens ativos que possam correr após destruir
+        DOTween.KillAll();
     }
-    
 }

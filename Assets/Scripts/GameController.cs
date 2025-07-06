@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class GameController : MonoBehaviour
@@ -11,7 +10,6 @@ public class GameController : MonoBehaviour
 
     [Header("Dependências")]
     [SerializeField] private CardsController cardsController;
-    [SerializeField] private LevelManager levelManager;
 
     private float elapsedTime = 0f;
     private int attempts = 0;
@@ -19,12 +17,11 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        if (!cardsController) 
+        if (cardsController == null)
             cardsController = FindObjectOfType<CardsController>();
 
-        cardsController.OnPreviewComplete  += HandlePreviewComplete;
-        cardsController.OnCardFlipped      += HandleCardFlipped;
-        cardsController.OnAllMatchesFound  += OnLevelComplete;
+        cardsController.OnPreviewComplete += HandlePreviewComplete;
+        cardsController.OnCardFlipped     += HandleCardFlipped;
 
         UpdateTimerUI();
         UpdateAttemptsUI();
@@ -44,22 +41,10 @@ public class GameController : MonoBehaviour
         gameRunning = true;
     }
 
-    void HandleCardFlipped()
+    private void HandleCardFlipped()
     {
         attempts++;
         attemptsText.text = $"Attempts: {attempts}";
-    }
-
-    void OnLevelComplete()
-    {
-        gameRunning = false;
-        StartCoroutine( WaitAndLoadNext() );
-    }
-
-    IEnumerator WaitAndLoadNext()
-    {
-        yield return new WaitForSeconds(1f);
-        levelManager.LoadNextLevel();
     }
 
     private void UpdateTimerUI()

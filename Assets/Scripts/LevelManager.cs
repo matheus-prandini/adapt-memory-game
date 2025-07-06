@@ -1,33 +1,33 @@
-// Assets/Scripts/LevelManager.cs
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
-    // Prefiro usar PlayerPrefs para lembrar qual nível o jogador está
     const string kLevelKey = "CurrentLevelIndex";
 
     void Awake()
     {
+        if (transform.parent != null)
+            transform.SetParent(null);
+
         DontDestroyOnLoad(gameObject);
     }
 
     void Start()
     {
-        // Se vier do menu principal, garante que começamos em Level1
         if (SceneManager.GetActiveScene().name == "MainMenu")
         {
             PlayerPrefs.SetInt(kLevelKey, 1);
         }
     }
 
-    // Chamado pela UI ou pelo GameController quando a fase termina
     public void LoadNextLevel()
     {
-        int idx = PlayerPrefs.GetInt(kLevelKey, 1);
-        idx++;  // próxima fase
+        DOTween.KillAll();
+        DOTween.Clear(true);
 
-        // Se não existir cena numerada, volta ao MainMenu
+        int idx = PlayerPrefs.GetInt(kLevelKey, 1) + 1;
         if (idx > SceneManager.sceneCountInBuildSettings - 1)
         {
             SceneManager.LoadScene("MainMenu");
@@ -36,16 +36,29 @@ public class LevelManager : MonoBehaviour
         else
         {
             PlayerPrefs.SetInt(kLevelKey, idx);
-            // BuildSettings: índice de cena = ordem na lista
             SceneManager.LoadScene(idx);
         }
     }
 
-    // Expor para botões do menu
     public void OnPlayFromMenu()
     {
+        DOTween.KillAll();
+        DOTween.Clear(true); 
         PlayerPrefs.SetInt(kLevelKey, 1);
-        SceneManager.LoadScene(1); // Level1
+        SceneManager.LoadScene(1);
+    }
+
+    public void ResetLevel()
+    {
+        DG.Tweening.DOTween.KillAll(true);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void BackToMenu()
+    {
+        DOTween.KillAll();
+        DOTween.Clear(true);
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 
     public void OnQuit()
