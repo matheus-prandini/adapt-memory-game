@@ -19,6 +19,8 @@ public class Card : MonoBehaviour
     [HideInInspector] public CardsController controller;
     private CardAudio audioPlayer;
 
+    private Vector3 _originalScale;
+
     void Awake()
     {
         // pega o CardAudio para tocar o som
@@ -26,6 +28,8 @@ public class Card : MonoBehaviour
 
         // começa sempre escondida
         iconImage.sprite = hiddenIconSprite;
+
+        _originalScale = transform.localScale;
     }
 
     public void OnCardClick()
@@ -74,16 +78,25 @@ public class Card : MonoBehaviour
            })
            .Append(transform.DOScaleX(1f, 0.2f));
     }
-    
+
     public void ShowInstant()
     {
         iconImage.sprite = iconSprite;
-        isSelected      = true;
+        isSelected = true;
     }
 
     public void HideInstant()
     {
         iconImage.sprite = hiddenIconSprite;
-        isSelected      = false;
+        isSelected = false;
     }
+
+    public void MarkAsMatched(Color highlightColor)
+    {
+        iconImage.color = highlightColor;
+        isMatched = true;
+        iconImage.raycastTarget = false;
+    }
+    
+    public Vector3 OriginalScale => _originalScale;
 }

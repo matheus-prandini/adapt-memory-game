@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DG.Tweening;
 
 
 public class CardsController : MonoBehaviour
@@ -47,7 +48,7 @@ public class CardsController : MonoBehaviour
             .ToList();
 
         spritePairs = combined.Select(x => x.sprite).ToList();
-        spriteIds   = combined.Select(x => x.id).ToList();
+        spriteIds = combined.Select(x => x.id).ToList();
     }
 
     void CreateCards()
@@ -77,7 +78,7 @@ public class CardsController : MonoBehaviour
             c.HideInstant();
 
         OnPreviewComplete?.Invoke();
-        firstSelected  = null;
+        firstSelected = null;
         secondSelected = null;
 
         canSelect = true;
@@ -111,30 +112,56 @@ public class CardsController : MonoBehaviour
     IEnumerator CheckMatch()
     {
         yield return new WaitForSeconds(0.3f);
-        if (firstSelected.iconSprite == secondSelected.iconSprite)
+
+        bool isMatch = firstSelected.iconSprite == secondSelected.iconSprite;
+        if (isMatch)
         {
             matchesCount++;
             firstSelected.isMatched = true;
             secondSelected.isMatched = true;
-            if (matchesCount == spritePairs.Count / 2)
+
+            var cardA = firstSelected;
+            var cardB = secondSelected;
+
+            cardA.transform.DOKill(true);
+            cardB.transform.DOKill(true);
+
+            cardA.transform.localScale = cardA.OriginalScale;
+            cardB.transform.localScale = cardB.OriginalScale;
+
+            float punchMultiplier = 1.2f;
+            float punchDuration = 0.3f;
+            float returnDuration = 0.15f;
+
+            Sequence seq = DOTween.Sequence();
+            seq
+            .Join(cardA.transform.DOScale(cardA.OriginalScale * punchMultiplier, punchDuration).SetEase(Ease.OutBack))
+            .Join(cardB.transform.DOScale(cardB.OriginalScale * punchMultiplier, punchDuration).SetEase(Ease.OutBack))
+            .AppendInterval(0.05f)
+            .Join(cardA.transform.DOScale(cardA.OriginalScale, returnDuration))
+            .Join(cardB.transform.DOScale(cardB.OriginalScale, returnDuration))
+            .OnComplete(() =>
             {
-                Debug.Log("All matches found!");
-                PrimeTween.Sequence.Create()
-                    .Chain(PrimeTween.Tween.Scale(gridTransform, Vector3.one * 1.2f, 0.5f, ease: PrimeTween.Ease.OutBack))
-                    .Chain(PrimeTween.Tween.Scale(gridTransform, Vector3.one, 0.1f));
+                canSelect = true;
+                firstSelected = null;
+                secondSelected = null;
+            });
+
+            if (matchesCount == spritePairs.Count / 2)
                 OnAllMatchesFound?.Invoke();
-            }
         }
         else
         {
             yield return new WaitForSeconds(1f);
             firstSelected.Hide();
             secondSelected.Hide();
+
+            canSelect = true;
+            firstSelected = null;
+            secondSelected = null;
         }
-        firstSelected = null;
-        secondSelected = null;
-        canSelect = true;
     }
+
 
     void ShuffleSprites(List<Sprite> spriteList)
     {
@@ -145,6 +172,12 @@ public class CardsController : MonoBehaviour
             spriteList[i] = spriteList[randomIndex];
             spriteList[randomIndex] = temp;
         }
+    }
+    
+    void OnDestroy()
+    {
+        if (gridTransform != null)
+            DOTween.Kill(gridTransform);
     }
     
 }
