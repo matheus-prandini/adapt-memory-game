@@ -24,6 +24,9 @@ public class LevelManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
+        var dtc = FindAnyObjectByType<DG.Tweening.Core.DOTweenComponent>();
+        if (dtc != null) Destroy(dtc.gameObject);
+
         DOTween.KillAll();
         DOTween.Clear(true);
 
@@ -42,11 +45,16 @@ public class LevelManager : MonoBehaviour
 
     public void OnPlayFromMenu()
     {
+        var dtc = FindAnyObjectByType<DG.Tweening.Core.DOTweenComponent>();
+        if (dtc != null) Destroy(dtc.gameObject);
+
         DOTween.KillAll();
-        DOTween.Clear(true); 
+        DOTween.Clear(true);
+
         PlayerPrefs.SetInt(kLevelKey, 1);
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
+
 
     public void ResetLevel()
     {
@@ -56,8 +64,12 @@ public class LevelManager : MonoBehaviour
 
     public void BackToMenu()
     {
+        var dtc = FindAnyObjectByType<DG.Tweening.Core.DOTweenComponent>();
+        if (dtc != null) Destroy(dtc.gameObject);
+
         DOTween.KillAll();
         DOTween.Clear(true);
+
         SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 
