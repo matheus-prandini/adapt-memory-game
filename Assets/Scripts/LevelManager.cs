@@ -1,6 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using DG.Tweening.Core;
 
 public class LevelManager : MonoBehaviour
 {
@@ -10,66 +11,55 @@ public class LevelManager : MonoBehaviour
     {
         if (transform.parent != null)
             transform.SetParent(null);
-
         DontDestroyOnLoad(gameObject);
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
-    void Start()
+    void OnDestroy()
     {
-        if (SceneManager.GetActiveScene().name == "MainMenu")
-        {
-            PlayerPrefs.SetInt(kLevelKey, 1);
-        }
+        SceneManager.sceneUnloaded -= OnSceneUnloaded;
     }
 
-    public void LoadNextLevel()
+    private void OnSceneUnloaded(Scene s)
     {
-        var dtc = FindAnyObjectByType<DG.Tweening.Core.DOTweenComponent>();
-        if (dtc != null) Destroy(dtc.gameObject);
-
-        DOTween.KillAll();
-        DOTween.Clear(true);
-
-        int idx = PlayerPrefs.GetInt(kLevelKey, 1) + 1;
-        if (idx > SceneManager.sceneCountInBuildSettings - 1)
-        {
-            SceneManager.LoadScene("MainMenu");
-            PlayerPrefs.DeleteKey(kLevelKey);
-        }
-        else
-        {
-            PlayerPrefs.SetInt(kLevelKey, idx);
-            SceneManager.LoadScene(idx);
-        }
+        DOTween.KillAll(true);
     }
 
     public void OnPlayFromMenu()
     {
-        var dtc = FindAnyObjectByType<DG.Tweening.Core.DOTweenComponent>();
-        if (dtc != null) Destroy(dtc.gameObject);
-
-        DOTween.KillAll();
-        DOTween.Clear(true);
+        DOTween.KillAll(true);
 
         PlayerPrefs.SetInt(kLevelKey, 1);
         SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
 
+    public void LoadNextLevel()
+    {
+        DOTween.KillAll(true);
+
+        int idx = PlayerPrefs.GetInt(kLevelKey, 1) + 1;
+        if (idx > SceneManager.sceneCountInBuildSettings - 1)
+        {
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+            PlayerPrefs.DeleteKey(kLevelKey);
+        }
+        else
+        {
+            PlayerPrefs.SetInt(kLevelKey, idx);
+            SceneManager.LoadScene(idx, LoadSceneMode.Single);
+        }
+    }
 
     public void ResetLevel()
     {
-        DG.Tweening.DOTween.KillAll(true);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        DOTween.KillAll(true);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
     }
 
     public void BackToMenu()
     {
-        var dtc = FindAnyObjectByType<DG.Tweening.Core.DOTweenComponent>();
-        if (dtc != null) Destroy(dtc.gameObject);
-
-        DOTween.KillAll();
-        DOTween.Clear(true);
-
+        DOTween.KillAll(true);
         SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 

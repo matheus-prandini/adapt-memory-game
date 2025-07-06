@@ -9,9 +9,12 @@ public class UIManager : MonoBehaviour
 
     [Header("Dependências")]
     [SerializeField] private LevelManager levelManager;
+    
+    [SerializeField] private GameObject gameLayoutRoot;
 
-    private GameController  gameController;
+    private GameController gameController;
     private CardsController cardsController;
+
 
     void Awake()
     {
@@ -44,6 +47,11 @@ public class UIManager : MonoBehaviour
 
     private void ShowVictory()
     {
+        cardsController.enabled = false;
+
+        if (gameLayoutRoot != null)
+            gameLayoutRoot.SetActive(false);
+
         if (gameController == null)
             return;
 
@@ -56,16 +64,12 @@ public class UIManager : MonoBehaviour
 
     public void OnNextClicked()
     {
-        if (victoryPanel != null)
-            victoryPanel.SetActive(false);
         if (levelManager != null)
             levelManager.LoadNextLevel();
     }
 
     public void OnMenuClicked()
     {
-        if (victoryPanel != null)
-            victoryPanel.SetActive(false);
         if (levelManager != null)
             levelManager.BackToMenu();
     }
