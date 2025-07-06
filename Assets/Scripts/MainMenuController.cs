@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +9,8 @@ public class MainMenuController : MonoBehaviour
 
     public void OnPlayButton()
     {
+        DOTween.KillAll();
+        DOTween.Clear(true);
         fader.FadeToScene(gameSceneName);
     }
 }
