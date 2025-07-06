@@ -1073,6 +1073,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   victoryPanel: {fileID: 2343906326912159765}
+  victoryMessage: {fileID: 1303427309355681957}
   levelManager: {fileID: 9176745158073535866}
 --- !u!1 &3531136524435985773
 GameObject:
@@ -2154,8 +2155,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 20, y: 164}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 36, y: 183}
+  m_SizeDelta: {x: 458.06, y: 139.5311}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7007919437701001746
 CanvasRenderer:
