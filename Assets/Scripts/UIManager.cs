@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     {
         victoryPanel.SetActive(false);
 
-        cardsController = FindObjectOfType<CardsController>();
+        cardsController = FindAnyObjectByType<CardsController>();
         if (cardsController == null)
         {
             Debug.LogError("UIManager: não encontrei CardsController na cena!");

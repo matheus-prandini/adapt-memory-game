@@ -18,7 +18,7 @@ public class GameController : MonoBehaviour
     void Start()
     {
         if (cardsController == null)
-            cardsController = FindObjectOfType<CardsController>();
+            cardsController = FindAnyObjectByType<CardsController>();
 
         cardsController.OnPreviewComplete += HandlePreviewComplete;
         cardsController.OnCardFlipped     += HandleCardFlipped;
