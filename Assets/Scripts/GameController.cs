@@ -15,13 +15,15 @@ public class GameController : MonoBehaviour
     private int attempts = 0;
     private bool gameRunning = false;
 
+
     void Start()
     {
         if (cardsController == null)
             cardsController = FindAnyObjectByType<CardsController>();
 
         cardsController.OnPreviewComplete += HandlePreviewComplete;
-        cardsController.OnCardFlipped     += HandleCardFlipped;
+        cardsController.OnCardFlipped += HandleCardFlipped;
+        cardsController.OnAllMatchesFound += HandleLevelComplete;
 
         UpdateTimerUI();
         UpdateAttemptsUI();
@@ -47,6 +49,11 @@ public class GameController : MonoBehaviour
         attemptsText.text = $"Attempts: {attempts}";
     }
 
+    private void HandleLevelComplete()
+    {
+        gameRunning = false;
+    }
+
     private void UpdateTimerUI()
     {
         timerText.text = $"Time: {elapsedTime:F1}s";
@@ -56,4 +63,7 @@ public class GameController : MonoBehaviour
     {
         attemptsText.text = $"Attempts: {attempts}";
     }
+    
+    public float ElapsedTime => elapsedTime;
+    public int Attempts    => attempts;
 }

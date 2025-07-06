@@ -1,25 +1,39 @@
-using DG.Tweening;
 using UnityEngine;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("Referências UI")]
     [SerializeField] private GameObject victoryPanel;
+    [SerializeField] private TMP_Text   victoryMessage;
+
+    [Header("Dependências")]
     [SerializeField] private LevelManager levelManager;
 
+    private GameController  gameController;
     private CardsController cardsController;
+
+    void Awake()
+    {
+        if (victoryPanel != null)
+            victoryPanel.SetActive(false);
+    }
 
     void Start()
     {
-        victoryPanel.SetActive(false);
+        gameController = FindAnyObjectByType<GameController>();
+        if (gameController == null)
+            Debug.LogError("UIManager: não encontrei nenhum GameController na cena!");
 
         cardsController = FindAnyObjectByType<CardsController>();
         if (cardsController == null)
         {
-            Debug.LogError("UIManager: não encontrei CardsController na cena!");
-            return;
+            Debug.LogError("UIManager: não encontrei nenhum CardsController na cena!");
         }
-
-        cardsController.OnAllMatchesFound += ShowVictory;
+        else
+        {
+            cardsController.OnAllMatchesFound += ShowVictory;
+        }
     }
 
     void OnDestroy()
@@ -30,24 +44,29 @@ public class UIManager : MonoBehaviour
 
     private void ShowVictory()
     {
-        Debug.Log(">> UIManager.ShowVictory called");
-        victoryPanel.transform.SetAsLastSibling();
-        
-        CanvasGroup cg = victoryPanel.GetComponent<CanvasGroup>();
-        cg.alpha = 0;
+        if (gameController == null)
+            return;
+
+        float t = gameController.ElapsedTime;
+        int   a = gameController.Attempts;
+        victoryMessage.text = $"Parabéns!\nVocê levou {t:F1} segundos\ne {a} tentativas para finalizar.";
+
         victoryPanel.SetActive(true);
-        DOTween.To(() => cg.alpha, a => cg.alpha = a, 1, 0.4f);
     }
 
     public void OnNextClicked()
     {
-        victoryPanel.SetActive(false);
-        levelManager.LoadNextLevel();
+        if (victoryPanel != null)
+            victoryPanel.SetActive(false);
+        if (levelManager != null)
+            levelManager.LoadNextLevel();
     }
 
     public void OnMenuClicked()
     {
-        victoryPanel.SetActive(false);
-        levelManager.BackToMenu();
+        if (victoryPanel != null)
+            victoryPanel.SetActive(false);
+        if (levelManager != null)
+            levelManager.BackToMenu();
     }
 }
