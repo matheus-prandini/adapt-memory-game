@@ -33,7 +33,8 @@ public class CardsController : MonoBehaviour
         if (levelConfig == null || levelConfig.spriteCategory == null)
         {
             Debug.LogError("LevelConfig ou SpriteCategory não atribuído!", this);
-            enabled = false; return;
+            enabled = false;
+            return;
         }
 
         allCards = new List<Card>();
@@ -122,24 +123,19 @@ public class CardsController : MonoBehaviour
         bool isMatch = firstSelected.iconSprite == secondSelected.iconSprite;
         if (isMatch)
         {
-            // acerto!
             matchesCount++;
             firstSelected .isMatched = true;
             secondSelected.isMatched = true;
 
-            // flash de feedback
             var cardA = firstSelected;
             var cardB = secondSelected;
 
-            // mata tweens pendentes
             DOTween.Kill(cardA.transform);
             DOTween.Kill(cardB.transform);
 
-            // garante escala original
             cardA.transform.localScale = cardA.OriginalScale;
             cardB.transform.localScale = cardB.OriginalScale;
 
-            // pulse animation
             float punchMul  = 1.2f;
             float punchDur  = 0.3f;
             float returnDur = 0.15f;
@@ -154,14 +150,13 @@ public class CardsController : MonoBehaviour
                 {
                     canSelect = true;
                     firstSelected = secondSelected = null;
-                });
 
-            if (matchesCount == levelConfig.pairsCount)
-                OnAllMatchesFound?.Invoke();
+                    if (matchesCount == levelConfig.pairsCount)
+                        OnAllMatchesFound?.Invoke();
+                });
         }
         else
         {
-            // erro: esperar e virar de novo
             yield return new WaitForSeconds(1f);
             firstSelected.Hide();
             secondSelected.Hide();
@@ -172,7 +167,6 @@ public class CardsController : MonoBehaviour
 
     void OnDestroy()
     {
-        // mata quaisquer tweens ativos que possam correr após destruir
         DOTween.KillAll();
     }
 }
