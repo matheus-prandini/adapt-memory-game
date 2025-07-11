@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c2e2429d7a94486897d17ad48b18166, type: 3}
+  m_Name: LettersCategory
+  m_EditorClassIdentifier: 
+  categoryName: letters
+  sprites:
+  - {fileID: 21300000, guid: ba4453cf7e8c64ee19b52326a44f41e7, type: 3}
+  - {fileID: 21300000, guid: 42561781b46e34cde9875c4d68187344, type: 3}
+  - {fileID: 21300000, guid: 0869ad46bc97c4237aeeb8325fc226e5, type: 3}
+  - {fileID: 21300000, guid: cbfcbb472e1904af480a54c1518ccda4, type: 3}
+  - {fileID: 21300000, guid: 636ddff370404463eb39a5956c32eadf, type: 3}
+  - {fileID: 21300000, guid: af6e12bafd96d41b7956006032418b76, type: 3}
+  - {fileID: 21300000, guid: ae7eacb08382e4bbd89dce96ff282f95, type: 3}
+  - {fileID: 21300000, guid: dd003259efa4e4d1e9df739e1f89ba67, type: 3}
