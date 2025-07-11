@@ -7,7 +7,9 @@ using UnityEngine;
 public class SpriteCategory : ScriptableObject
 {
     [Header("Identificador do Tema")]
-    public string    categoryName;
+    public string categoryName;
     [Header("Sprites deste Tema")]
-    public Sprite[]  sprites;
+    public Sprite[] sprites;
+    [Header("Áudios (mesmo tamanho e ordem que 'sprites')")]
+    public AudioClip[] audioClips;
 }

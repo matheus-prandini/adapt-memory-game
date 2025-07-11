@@ -1,16 +1,25 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using DG.Tweening.Core;
 
 public class LevelManager : MonoBehaviour
 {
-    const string kLevelKey = "CurrentLevelIndex";
+    public static LevelManager Instance { get; private set; }
+    public enum GameMode { Numbers, Letters }
+    public GameMode selectedMode;
+
+    [HideInInspector] public int currentLevel = 1;
+    [SerializeField] private int maxNumberLevels = 8;
+    [SerializeField] private int maxLetterLevels = 8;
 
     void Awake()
     {
-        if (transform.parent != null)
-            transform.SetParent(null);
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
         DontDestroyOnLoad(gameObject);
 
         SceneManager.sceneUnloaded += OnSceneUnloaded;
@@ -18,49 +27,65 @@ public class LevelManager : MonoBehaviour
 
     void OnDestroy()
     {
+        if (Instance == this) Instance = null;
         SceneManager.sceneUnloaded -= OnSceneUnloaded;
     }
 
     private void OnSceneUnloaded(Scene s)
     {
-        DOTween.KillAll(true);
+        DOTween.KillAll();
     }
 
-    public void OnPlayFromMenu()
+    public void StartMode()
     {
-        DOTween.KillAll(true);
+        currentLevel = 1;
+        LoadModeLevel();
+    }
 
-        PlayerPrefs.SetInt(kLevelKey, 1);
-        SceneManager.LoadScene(1, LoadSceneMode.Single);
+    public void LoadModeLevel()
+    {
+        DOTween.KillAll();
+
+        string sceneName = $"{selectedMode}Level{currentLevel}";
+        Debug.Log($"Loading scene: {sceneName}");
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 
     public void LoadNextLevel()
     {
-        DOTween.KillAll(true);
+        DOTween.KillAll();
 
-        int idx = PlayerPrefs.GetInt(kLevelKey, 1) + 1;
-        if (idx > SceneManager.sceneCountInBuildSettings - 1)
+        int max = selectedMode == GameMode.Numbers 
+            ? maxNumberLevels 
+            : maxLetterLevels;
+
+        currentLevel++;
+        if (currentLevel > max)
         {
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
-            PlayerPrefs.DeleteKey(kLevelKey);
         }
         else
         {
-            PlayerPrefs.SetInt(kLevelKey, idx);
-            SceneManager.LoadScene(idx, LoadSceneMode.Single);
+            LoadModeLevel();
         }
     }
 
-    public void ResetLevel()
+    public void OnPlayFromMenu()
     {
-        DOTween.KillAll(true);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+        DOTween.KillAll();
+        SceneManager.LoadScene("ModeSelection", LoadSceneMode.Single);
     }
 
     public void BackToMenu()
     {
-        DOTween.KillAll(true);
+        DOTween.KillAll();
         SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+    }
+
+    public void ResetLevel()
+    {
+        DOTween.KillAll();
+        LoadModeLevel();
     }
 
     public void OnQuit()

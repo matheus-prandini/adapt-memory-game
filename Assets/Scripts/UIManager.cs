@@ -7,14 +7,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject victoryPanel;
     [SerializeField] private TMP_Text   victoryMessage;
 
-    [Header("Dependências")]
-    [SerializeField] private LevelManager levelManager;
-    
+    [Header("Dependências de Jogo")]
     [SerializeField] private GameObject gameLayoutRoot;
 
-    private GameController gameController;
+    private GameController  gameController;
     private CardsController cardsController;
-
 
     void Awake()
     {
@@ -24,19 +21,17 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        gameController = FindAnyObjectByType<GameController>();
+        // captura o GameController
+        gameController = FindObjectOfType<GameController>();
         if (gameController == null)
-            Debug.LogError("UIManager: não encontrei nenhum GameController na cena!");
+            Debug.LogError("UIManager: não encontrei GameController!");
 
-        cardsController = FindAnyObjectByType<CardsController>();
+        // captura o CardsController e assina
+        cardsController = FindObjectOfType<CardsController>();
         if (cardsController == null)
-        {
-            Debug.LogError("UIManager: não encontrei nenhum CardsController na cena!");
-        }
+            Debug.LogError("UIManager: não encontrei CardsController!");
         else
-        {
             cardsController.OnAllMatchesFound += ShowVictory;
-        }
     }
 
     void OnDestroy()
@@ -47,30 +42,33 @@ public class UIManager : MonoBehaviour
 
     private void ShowVictory()
     {
+        // trava interações com o tabuleiro
         cardsController.enabled = false;
-
         if (gameLayoutRoot != null)
             gameLayoutRoot.SetActive(false);
 
-        if (gameController == null)
-            return;
+        if (gameController == null) return;
 
+        // monta mensagem
         float t = gameController.ElapsedTime;
         int   a = gameController.Attempts;
-        victoryMessage.text = $"Parabéns!\nVocê levou {t:F1} segundos\ne {a} tentativas para finalizar.";
+        victoryMessage.text = $"Parabéns!\nVocê levou {t:F1}s e {a} tentativas.";
 
+        // mostra overlay
+        victoryPanel.transform.SetAsLastSibling();
         victoryPanel.SetActive(true);
     }
 
+    // agora chama o singleton direto
     public void OnNextClicked()
     {
-        if (levelManager != null)
-            levelManager.LoadNextLevel();
+        victoryPanel.SetActive(false);
+        LevelManager.Instance.LoadNextLevel();
     }
 
     public void OnMenuClicked()
     {
-        if (levelManager != null)
-            levelManager.BackToMenu();
+        victoryPanel.SetActive(false);
+        LevelManager.Instance.BackToMenu();
     }
 }

@@ -3,17 +3,22 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class CardAudio : MonoBehaviour
 {
-    [Tooltip("Arraste aqui os clips: index 0 = carta 0, etc.")]
-    public AudioClip[] flipClips;
+    [HideInInspector] public AudioClip[] audioClips;
+    [HideInInspector] public int      cardID;
 
     AudioSource src;
-    [HideInInspector] public int cardID;
 
-    void Awake() => src = GetComponent<AudioSource>();
+    void Awake()
+    {
+        src = GetComponent<AudioSource>();
+    }
 
     public void PlayFlip()
     {
-        if (cardID >= 0 && cardID < flipClips.Length && flipClips[cardID] != null)
-            src.PlayOneShot(flipClips[cardID]);
+        if (audioClips == null) return;
+        if (cardID < 0 || cardID >= audioClips.Length) return;
+        var clip = audioClips[cardID];
+        if (clip != null)
+            src.PlayOneShot(clip);
     }
 }

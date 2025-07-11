@@ -67,6 +67,7 @@ public class CardsController : MonoBehaviour
 
     void SpawnCards()
     {
+        var clips = levelConfig.spriteCategory.audioClips;
         for (int i = 0; i < spritePairs.Length; i++)
         {
             var card = Instantiate(cardPrefab, gridTransform);
@@ -74,7 +75,8 @@ public class CardsController : MonoBehaviour
             card.controller = this;
 
             var audio = card.GetComponent<CardAudio>();
-            if (audio != null) audio.cardID = spriteIds[i];
+            audio.cardID = spriteIds[i];
+            audio.audioClips = clips;
 
             allCards.Add(card);
         }
