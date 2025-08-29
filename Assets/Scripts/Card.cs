@@ -35,7 +35,7 @@ public class Card : MonoBehaviour
     public void OnCardClick()
     {
         // se já casou ou está bloqueado, ignora
-        if (isMatched) return;
+        if (isMatched || isSelected) return;
         controller?.SetSelected(this);
     }
 
