@@ -169,7 +169,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4190169624138132541, guid: 0da83a4da217a43449ce431fbfe2b0c0, type: 3}
       propertyPath: m_ConstraintCount
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6917000350099497940, guid: 0da83a4da217a43449ce431fbfe2b0c0, type: 3}
       propertyPath: levelConfig

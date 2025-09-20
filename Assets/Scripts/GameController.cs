@@ -33,20 +33,20 @@ public class GameController : MonoBehaviour
     {
         if (!gameRunning) return;
         elapsedTime += Time.deltaTime;
-        timerText.text = $"Time: {elapsedTime:F1}s";
+        timerText.text = $"Tempo: {elapsedTime:F1}s";
     }
 
     private void HandlePreviewComplete()
     {
         elapsedTime = 0f;
-        timerText.text = $"Time: {elapsedTime:F1}s";
+        timerText.text = $"Tempo: {elapsedTime:F1}s";
         gameRunning = true;
     }
 
     private void HandleCardFlipped()
     {
         attempts++;
-        attemptsText.text = $"Attempts: {attempts}";
+        attemptsText.text = $"Tentativas: {attempts}";
     }
 
     private void HandleLevelComplete()
@@ -56,12 +56,12 @@ public class GameController : MonoBehaviour
 
     private void UpdateTimerUI()
     {
-        timerText.text = $"Time: {elapsedTime:F1}s";
+        timerText.text = $"Tempo: {elapsedTime:F1}s";
     }
 
     private void UpdateAttemptsUI()
     {
-        attemptsText.text = $"Attempts: {attempts}";
+        attemptsText.text = $"Tentativas: {attempts}";
     }
     
     public float ElapsedTime => elapsedTime;
