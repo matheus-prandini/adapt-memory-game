@@ -10,7 +10,7 @@ public class LevelManager : MonoBehaviour
 
     [HideInInspector] public int currentLevel = 1;
     [SerializeField] private int maxNumberLevels = 8;
-    [SerializeField] private int maxLetterLevels = 8;
+    [SerializeField] private int maxLetterLevels = 7;
 
     void Awake()
     {
@@ -60,6 +60,7 @@ public class LevelManager : MonoBehaviour
             : maxLetterLevels;
 
         currentLevel++;
+        Debug.Log($"Mode: {selectedMode} - Loading Level: {currentLevel} - Max levels: {max}");
         if (currentLevel > max)
         {
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);

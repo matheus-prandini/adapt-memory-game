@@ -32,7 +32,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LettersLevel7.unity
     guid: 54facfb8c6734407ba22148ebb205dde
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/LettersLevel8.unity
     guid: 013a335b347234c10a53539839bd7f41
   - enabled: 1

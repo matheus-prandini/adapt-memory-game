@@ -44,3 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69a7dae22ae1d46f3a41a9bcaa578d44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectedMode: 0
+  currentLevel: 1
+  maxNumberLevels: 8
+  maxLetterLevels: 7
