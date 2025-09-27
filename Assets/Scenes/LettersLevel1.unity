@@ -167,10 +167,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2405881691687922765, guid: 0da83a4da217a43449ce431fbfe2b0c0, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -2130
+      objectReference: {fileID: 0}
+    - target: {fileID: 2405881691687922765, guid: 0da83a4da217a43449ce431fbfe2b0c0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -15
+      objectReference: {fileID: 0}
     - target: {fileID: 6917000350099497940, guid: 0da83a4da217a43449ce431fbfe2b0c0, type: 3}
       propertyPath: levelConfig
       value: 
       objectReference: {fileID: 11400000, guid: e74d049f64da9488db9feaf04d6d14b9, type: 2}
+    - target: {fileID: 7717385803908163416, guid: 0da83a4da217a43449ce431fbfe2b0c0, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 1050
+      objectReference: {fileID: 0}
     - target: {fileID: 8757078740535972520, guid: 0da83a4da217a43449ce431fbfe2b0c0, type: 3}
       propertyPath: m_Name
       value: LevelRoot
